@@ -9,6 +9,7 @@
 2. [Part 2. Операции с контейнером](#part-2-операции-с-контейнером)
 3. [Part 3. Мини веб-сервер](#part-3-мини-веб-сервер)
 4. [Part 4. Свой докер](#part-4-свой-докер)
+5. [Part 5. **Dockle**](#part-5-dockle)
 
 ## Part 1. Готовый докер
 
@@ -259,7 +260,7 @@
 
 - Запустить собранный докер образ с маппингом 81 порта на 80 на локальной машине и маппингом папки *./nginx* внутрь контейнера по адресу, где лежат конфигурационные файлы **nginx**'а (см. [Часть 2](#part-2-операции-с-контейнером)) <br>
 
-`docker run -it -p 80:81 -v /home/deadline/s21_projects/DO5_SimpleDocker/src/part_4/nging.conf:/etc/nginx/nginx.conf -d part4:1 bash` <br>
+`docker run -it -p 80:81 -v /home/deadline/s21_projects/DO5_SimpleDocker/src/part_4/nginx.conf:/etc/nginx/nginx.conf -d part4:1 bash` <br>
 <img src="../misc/images/part_4/5.jpg" alt="4_5" /> <br>
 
 - Проверить, что по localhost:80 доступна страничка написанного мини сервера <br>
@@ -283,3 +284,25 @@
 - Проверить, что теперь по *localhost:80/status* отдается страничка со статусом **nginx** <br>
 
 <img src="../misc/images/part_4/9.jpg" alt="4_9" /> <br>
+
+## Part 5. **Dockle**
+
+- Установить dockle (fedora):
+
+`VERSION=$(curl --silent "https://api.github.com/repos/goodwithtech/dockle/releases/latest" | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/') && curl -L -o dockle.rpm https://github.com/goodwithtech/dockle/releases/download/v${VERSION}/dockle_${VERSION}_Linux-64bit.rpm` <br>
+`sudo dnf install -y dockle.rpm` <br>
+
+- Просканировать образ из предыдущего задания через `dockle [image_id|repository]` <br>
+
+`dockle -i CIS-DI-0010 part4:1` <br>
+<img src="../misc/images/part_5/1.jpg" alt="5_1" /> <br>
+
+- Исправить образ так, чтобы при проверке через **dockle** не было ошибок и предупреждений <br>
+
+`vim Dockerfile` <br>
+<img src="../misc/images/part_5/2.jpg" alt="5_2" /> <br>
+
+- Просканировать исправленный образ через `dockle [image_id|repository]` <br>
+
+`dockle -i CIS-DI-0010 part4:part5` <br>
+<img src="../misc/images/part_5/3.jpg" alt="5_3" /> <br>
