@@ -308,6 +308,11 @@
 `dockle -i CIS-DI-0010 part4:part5` <br>
 <img src="../misc/images/part_5/3.jpg" alt="5_3" /> <br>
 
+- Проверить, что в браузере по *localhost:80* отдается написанная вами страничка, как и ранее <br>
+
+`curl localhost` <br>
+<img src="../misc/images/part_5/4.jpg" alt="5_4" /> <br>
+
 ## Part 6. Базовый **Docker Compose**
 
 - Установить docker-compose (fedora):
