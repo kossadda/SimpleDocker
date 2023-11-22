@@ -8,6 +8,7 @@
 1. [Part 1. Готовый докер](#part-1-готовый-докер)
 2. [Part 2. Операции с контейнером](#part-2-операции-с-контейнером)
 3. [Part 3. Мини веб-сервер](#part-3-мини-веб-сервер)
+4. [Part 4. Свой докер](#part-4-свой-докер)
 
 ## Part 1. Готовый докер
 
@@ -209,12 +210,12 @@
 `gcc miniserver.c -lfcgi -o mini` <br>
 <img src="../misc/images/part_3/10.jpg" alt="3_10" /> <br>
 
-9) Запуск FastCGI-сервера с использованием spawn-fcgi:
+9) Запустить FastCGI-сервера с использованием spawn-fcgi:
 
 `spawn-fcgi -p 8080 mini` <br>
 <img src="../misc/images/part_3/11.jpg" alt="3_11" /> <br>
 
-10) Перезагрузка конфигурации Nginx:
+10) Перезагрузить конфигурации nginx:
 
 `nginx -s reload` <br>
 <img src="../misc/images/part_3/12.jpg" alt="3_12" /> <br>
@@ -229,3 +230,56 @@
 `mkdir nginx` <br>
 `mv nginx.conf nginx` <br>
 <img src="../misc/images/part_3/14.jpg" alt="3_14" /> <br>
+
+## Part 4. Свой докер
+
+**Написать свой докер образ, который:**
+1) собирает исходники мини сервера на FastCgi из [Части 3](#part-3-мини-веб-сервер)
+2) запускает его на 8080 порту
+3) копирует внутрь образа написанный *./nginx/nginx.conf*
+4) запускает **nginx**.
+
+>**nginx** можно установить внутрь докера самостоятельно, а можно воспользоваться готовым образом с **nginx**'ом, как базовым.
+
+`vim Dockerfile` <br>
+<img src="../misc/images/part_4/1.jpg" alt="4_1" /> <br>
+
+`vim run.sh` <br>
+<img src="../misc/images/part_4/2.jpg" alt="4_2" /> <br>
+
+- Собрать написанный докер образ через `docker build` при этом указав имя и тег <br>
+
+`docker build -t part4:1 .` <br>
+<img src="../misc/images/part_4/3.jpg" alt="4_3" /> <br>
+
+- Проверить через `docker images`, что все собралось корректно <br>
+
+`docker images` <br>
+<img src="../misc/images/part_4/4.jpg" alt="4_4" /> <br>
+
+- Запустить собранный докер образ с маппингом 81 порта на 80 на локальной машине и маппингом папки *./nginx* внутрь контейнера по адресу, где лежат конфигурационные файлы **nginx**'а (см. [Часть 2](#part-2-операции-с-контейнером)) <br>
+
+`docker run -it -p 80:81 -v /home/deadline/s21_projects/DO5_SimpleDocker/src/part_4/nging.conf:/etc/nginx/nginx.conf -d part4:1 bash` <br>
+<img src="../misc/images/part_4/5.jpg" alt="4_5" /> <br>
+
+- Проверить, что по localhost:80 доступна страничка написанного мини сервера <br>
+
+`curl localhost` <br>
+<img src="../misc/images/part_4/6.jpg" alt="4_6" /> <br>
+
+- Дописать в *./nginx/nginx.conf* проксирование странички */status*, по которой надо отдавать статус сервера **nginx** <br>
+
+`vim nginx.conf` <br>
+<img src="../misc/images/part_4/7.jpg" alt="4_7" /> <br>
+
+- Перезапустить докер образ <br>
+
+`sudo docker exec -it epic_bose /bin/bash` <br>
+`nginx -s reload` <br>
+<img src="../misc/images/part_4/8.jpg" alt="4_8" /> <br>
+
+>*Если всё сделано верно, то, после сохранения файла и перезапуска контейнера, конфигурационный файл внутри докер образа должен обновиться самостоятельно без лишних действий*. <br>
+
+- Проверить, что теперь по *localhost:80/status* отдается страничка со статусом **nginx** <br>
+
+<img src="../misc/images/part_4/9.jpg" alt="4_9" /> <br>
