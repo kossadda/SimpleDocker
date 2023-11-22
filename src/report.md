@@ -5,8 +5,9 @@
 
 ## Оглавление
 
-1. [Part 1. Готовый докер](#part-1-готовый-докер) <br>
-2. [Part 2. Операции с контейнером](#part-2-операции-с-контейнером) <br>
+1. [Part 1. Готовый докер](#part-1-готовый-докер)
+2. [Part 2. Операции с контейнером](#part-2-операции-с-контейнером)
+3. [Part 3. Мини веб-сервер](#part-3-мини-веб-сервер)
 
 ## Part 1. Готовый докер
 
@@ -149,3 +150,82 @@
 
 `curl localhost:80/status` <br>
 <img src="../misc/images/part_2/13.jpg" alt="2_13" /> <br>
+
+## Part 3. Мини веб-сервер
+
+- Написать мини сервер на **C** и **FastCgi**, который будет возвращать простейшую страничку с надписью `Hello World!` <br>
+
+`vim miniserver.c` <br>
+<img src="../misc/images/part_3/1.jpg" alt="3_1" /> <br>
+
+- Написать свой *nginx.conf*, который будет проксировать все запросы с 81 порта на *127.0.0.1:8080* <br>
+
+`vim nginx.conf` <br>
+<img src="../misc/images/part_3/2.jpg" alt="3_2" /> <br>
+
+- Запустить написанный мини сервер через *spawn-fcgi* на порту 8080 <br>
+
+1) Загрузить заново образ с **nginx**:
+
+`docker pull nginx` <br>
+<img src="../misc/images/part_3/3.jpg" alt="3_3" /> <br>
+
+2) Проверить наличие образа **nginx**:
+
+`docker images` <br>
+<img src="../misc/images/part_3/4.jpg" alt="3_4" /> <br>
+
+3) Запустить контейнер с образа **nginx**:
+
+`docker run -d -p 81:81 --name part3 nginx` <br>
+<img src="../misc/images/part_3/5.jpg" alt="3_5" /> <br>
+
+4) Проверить наличие контейнера с образа **nginx**:
+
+`docker ps` <br>
+<img src="../misc/images/part_3/6.jpg" alt="3_6" /> <br>
+
+5) Скопировать созданные файлы *nginx.conf* и *miniserver.c* внутрь докер образа через команду `docker cp`:
+
+`docker cp nginx.conf part3:/etc/nginx/` <br>
+`docker cp miniserver.c part3:/home/` <br>
+<img src="../misc/images/part_3/7.jpg" alt="3_7" /> <br>
+
+6) Запустить интерактивную оболочку внутри запущенного докер-контейнера:
+
+`docker exec -it part3 bash` <br>
+<img src="../misc/images/part_3/8.jpg" alt="3_8" /> <br>
+
+7) Запустить установку gcc компилятора, утилиты spawn-fcgi и библиотеки libfcgi-dev:
+
+`apt-get update` <br>
+`apt-get install gcc` <br>
+`apt-get install spawn-fcgi` <br>
+`apt-get install libfcgi-dev` <br>
+<img src="../misc/images/part_3/9.jpg" alt="3_9" /> <br>
+
+8) Скомпилировать miniserver.c:
+
+`gcc miniserver.c -lfcgi -o mini` <br>
+<img src="../misc/images/part_3/10.jpg" alt="3_10" /> <br>
+
+9) Запуск FastCGI-сервера с использованием spawn-fcgi:
+
+`spawn-fcgi -p 8080 mini` <br>
+<img src="../misc/images/part_3/11.jpg" alt="3_11" /> <br>
+
+10) Перезагрузка конфигурации Nginx:
+
+`nginx -s reload` <br>
+<img src="../misc/images/part_3/12.jpg" alt="3_12" /> <br>
+
+- Проверить, что в браузере по *localhost:81* отдается написанная вами страничка <br>
+
+`curl localhost:81` <br>
+<img src="../misc/images/part_3/13.jpg" alt="3_13" /> <br>
+
+- Положить файл *nginx.conf* по пути *./nginx/nginx.conf* (это понадобится позже) <br>
+
+`mkdir nginx` <br>
+`mv nginx.conf nginx` <br>
+<img src="../misc/images/part_3/14.jpg" alt="3_14" /> <br>
