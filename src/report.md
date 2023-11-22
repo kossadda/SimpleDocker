@@ -10,6 +10,7 @@
 3. [Part 3. Мини веб-сервер](#part-3-мини-веб-сервер)
 4. [Part 4. Свой докер](#part-4-свой-докер)
 5. [Part 5. **Dockle**](#part-5-dockle)
+6. [Part 6. Базовый **Docker Compose**](#part-6-базовый-docker-compose)
 
 ## Part 1. Готовый докер
 
@@ -306,3 +307,36 @@
 
 `dockle -i CIS-DI-0010 part4:part5` <br>
 <img src="../misc/images/part_5/3.jpg" alt="5_3" /> <br>
+
+## Part 6. Базовый **Docker Compose**
+
+- Установить docker-compose (fedora):
+
+`sudo dnf install docker-compose` <br>
+
+**Написать файл *docker-compose.yml*, с помощью которого:**
+
+1) Поднять докер контейнер из [Части 5](#part-5-инструмент-dockle) _(он должен работать в локальной сети, т.е. не нужно использовать инструкцию **EXPOSE** и мапить порты на локальную машину)_
+2) Поднять докер контейнер с **nginx**, который будет проксировать все запросы с 8080 порта на 81 порт первого контейнера
+3) Замапить 8080 порт второго контейнера на 80 порт локальной машины
+
+- Остановить все запущенные контейнеры <br>
+
+`docker stop *"process"*` <br>
+`docker ps` <br>
+<img src="../misc/images/part_6/1.jpg" alt="6_1" /> <br>
+
+- Собрать и запустить проект с помощью команд `docker-compose build` и `docker-compose up` <br>
+
+`sudo docker-compose build` <br>
+<img src="../misc/images/part_6/2.jpg" alt="6_2" /> <br>
+
+`sudo docker compose up -d` <br>
+<img src="../misc/images/part_6/3.jpg" alt="6_3" /> <br>
+
+- Проверить, что в браузере по *localhost:80* отдается написанная вами страничка, как и ранее <br>
+
+`curl localhost` <br>
+<img src="../misc/images/part_6/4.jpg" alt="6_4" /> <br>
+
+[**К оглавлению**](#оглавление) <br>
